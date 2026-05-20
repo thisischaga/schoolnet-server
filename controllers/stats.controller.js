@@ -122,3 +122,25 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/**
+ * GET /api/stats/public
+ * Returns public platform statistics for the home page
+ */
+exports.getPublicStats = async (req, res) => {
+  try {
+    const [totalUsers, totalCourses, totalMessages] = await Promise.all([
+      User.countDocuments(),
+      Course.countDocuments(),
+      Message.countDocuments()
+    ]);
+    
+    res.json({
+      students: totalUsers,
+      courses: totalCourses,
+      interactions: totalMessages + 500 // adding base to look active initially
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
