@@ -1,12 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
+require('dotenv').config({ override: true });
 const path = require('path');
 const http = require('http');
 const { Server } = require('socket.io');
-
-dotenv.config();
 
 const fs = require('fs');
 
@@ -175,11 +173,17 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/schoolnet')
-  .then(() => {
-    console.log('Connected to MongoDB');
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT} (HTTP + WebSocket)`);
-    });
-  })
-  .catch(err => console.error('Could not connect to MongoDB:', err));
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 10000,
+  family: 4,
+})
+.then(() => {
+  console.log("✅ Connected to MongoDB");
+  server.listen(PORT, () => {
+    console.log(`🚀 Server running on ${PORT}`);
+  });
+})
+.catch((err) => {
+  console.error("❌ MongoDB error:");
+  console.error(err);
+});
